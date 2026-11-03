@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Stock Data Display"
 author: "Nayeli Cruz"
@@ -60,3 +61,67 @@ for (s in names(stocks)) {
   plot_volume(stocks[[s]], s)
 }
 ```
+=======
+---
+title: "Stock Data Display"
+author: "Nayeli Cruz"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+source("stock_functions.R")
+```
+
+## Display Functions
+
+```{r display_functions}
+show_table <- function(df, rows = 5) {
+  knitr::kable(tail(df, rows), row.names = FALSE, digits = 2)
+}
+
+plot_price <- function(df, symbol, n = 20) {
+  ma <- TTR::SMA(df$Close, n = min(n, nrow(df)))
+  plot(df$Date, df$Close, type = "l", xlab = "Date", ylab = "Close price",
+       main = paste(symbol, "closing price"))
+  lines(df$Date, ma, col = "blue", lwd = 2)
+  legend("topleft", legend = c("Close", paste(n, "day moving average")),
+         col = c("black", "blue"), lty = 1, bty = "n")
+}
+
+plot_volume <- function(df, symbol) {
+  plot(df$Date, df$Volume, type = "h", xlab = "Date", ylab = "Volume",
+       main = paste(symbol, "trading volume"))
+}
+```
+
+## Load Data
+
+```{r load_data}
+stocks <- load_stock_data("portfolio.txt")
+if (length(stocks) == 0) stop("No stock data loaded. Check your internet connection.")
+names(stocks)
+```
+
+## Summary Statistics
+
+```{r statistics}
+stats <- lapply(stocks, calculate_statistics)
+knitr::kable(summary_table(stats), digits = 2)
+```
+
+## Stock Details
+
+```{r details, results = "asis", fig.height = 4}
+for (s in names(stocks)) {
+  cat("\n\n### ", s, "\n\n")
+  print(show_table(stocks[[s]]))
+  cat("\n\n")
+  plot_price(stocks[[s]], s)
+  plot_volume(stocks[[s]], s)
+}
+```
+>>>>>>> 0c9ed17dc40afb933b818166142a614d753613a3
